@@ -1,0 +1,33 @@
+{
+	"name": "ds_temp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Tempcitycontaner": {
+				"type": "string",
+				"defaultValue": "Defaultvalue"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@formatDateTime(utcnow(),'yyyy-dd-MM')",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().Tempcitycontaner",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

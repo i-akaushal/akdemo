@@ -1,0 +1,30 @@
+{
+	"name": "cities_to_process",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "cities_to_process.json",
+				"container": "meta-data-container-dev"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"CityID": {
+					"type": "string"
+				},
+				"CityName": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

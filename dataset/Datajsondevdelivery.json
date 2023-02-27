@@ -1,0 +1,45 @@
+{
+	"name": "Datajsondevdelivery",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "delivery-info.json",
+				"folderPath": "sales",
+				"container": "salescontainer"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"InvoiceId": {
+					"type": "integer"
+				},
+				"DeliveryStatus": {
+					"type": "string"
+				},
+				"DeliveryDate": {
+					"type": "string"
+				},
+				"DeliveryLocation": {
+					"type": "object",
+					"properties": {
+						"Latitude": {
+							"type": "string"
+						},
+						"Longitude": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

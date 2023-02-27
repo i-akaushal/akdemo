@@ -1,0 +1,128 @@
+{
+	"name": "lk_cities_process",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup_cities_process",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "cities_to_process",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup_cities_process",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup_cities_process').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "copy-city-to-parqeut-files",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "select\n    inv.CustomerID,\n    inv.InvoiceID,\n    inv.OrderID,\n    inv.InvoiceDate,\n    cus.PostalCityID [CustomerPostalCityID],\n    ci.CityName [CustomerCityName],\n    ci.cityId [CustomerCityID]\nfrom Sales.Invoices inv\n    inner join Sales.Customers cus\n    on cus.CustomerID = inv.CustomerID\n    inner join Application.Cities ci\n    on ci.CityID = cus.PostalCityID\n    where ci.CityID = @{item().cityId}",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_wimporter_city_query",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_temp",
+									"type": "DatasetReference",
+									"parameters": {
+										"Tempcitycontaner": {
+											"value": "@pipeline().parameters.tempcityfilecontainer",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"tempcityfilecontainer": {
+				"type": "string",
+				"defaultValue": "DefaultValue"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-10T08:32:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
