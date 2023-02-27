@@ -1,0 +1,9 @@
+{
+	"name": "azuredevopspraticeADF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b0efcbe8-67eb-4c93-9511-951b7eeb3e0f",
+		"tenantId": "4e398ff2-f9c1-4896-a9f4-187a945c5471"
+	}
+}
